@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Juan's Bank</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #f0f4f8;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        color: #333;
+        padding: 20px;
+      }
+
+      h1 {
+        font-size: 3em;
+        color: #007bff;
+        margin-bottom: 30px;
+        font-weight: 600;
+        text-align: center;
+        text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      h5 {
+        font-size: 1em;
+        color: #555;
+        margin-bottom: 20px;
+        text-align: center;
+      }
+
+      #logo {
+        width: 120px;
+        margin-bottom: 20px;
+        margin-right: 10px;
+      }
+
+      button {
+        background-color: #007bff;
+        color: white;
+        border: none;
+        padding: 15px 30px;
+        font-size: 1.2em;
+        cursor: pointer;
+        border-radius: 25px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        transition: all 0.3s ease;
+        margin-bottom: 40px;
+      }
+
+      button:hover {
+        background-color: #0056b3;
+        transform: scale(1.05);
+      }
+
+      #user-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 30px;
+        justify-content: center;
+        margin-top: 20px;
+      }
+
+      .user-rectangle {
+        width: 220px;
+        height: 180px;
+        background-color: #007bff;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        border-radius: 15px;
+        cursor: pointer;
+        position: relative;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        overflow: hidden;
+      }
+
+      .user-rectangle:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+      }
+
+      .user-rectangle span {
+        font-size: 1.4em;
+        color: white;
+        font-weight: bold;
+        margin-bottom: 10px;
+      }
+
+      .user-details {
+        display: none;
+        position: absolute;
+        bottom: 15px;
+        left: 15px;
+        background-color: rgba(0, 0, 0, 0.7);
+        color: white;
+        padding: 12px;
+        border-radius: 8px;
+        font-size: 0.9em;
+        width: 90%;
+        text-align: left;
+        transition: all 0.3s ease;
+      }
+
+      .user-rectangle:hover .user-details {
+        display: block;
+        transform: translateY(5px);
+      }
+
+      .user-details strong {
+        color: #ffd700;
+      }
+    </style>
+  </head>
+  <body>
+    <h5>
+      Full Stack Bank Simulator Interface Developed with HTML, CSS, JavaScript,
+      and Java
+    </h5>
+    <img src="bank_logo.png" alt="Juan's Bank Logo" id="logo" />
+    <h1>Juan's Bank</h1>
+    <button id="display-users-btn">Display Users in the Bank</button>
+    <div id="user-container" style="display: none"></div>
+
+    <script>
+      const displayButton = document.getElementById("display-users-btn");
+      const userContainer = document.getElementById("user-container");
+
+      displayButton.addEventListener("click", function () {
+        if (
+          userContainer.style.display === "none" ||
+          userContainer.style.display === ""
+        ) {
+          // Fetch and display users
+          fetch("http://localhost:3000/get-users")
+            .then((response) => response.json())
+            .then((users) => {
+              userContainer.innerHTML = ""; // Clear any existing users
+
+              users.forEach((user) => {
+                const userRect = document.createElement("div");
+                userRect.classList.add("user-rectangle");
+
+                const userName = document.createElement("span");
+                userName.textContent = `${user.firstName} ${user.lastName}`;
+                userRect.appendChild(userName);
+
+                const userDetails = document.createElement("div");
+                userDetails.classList.add("user-details");
+                userDetails.innerHTML = `
+                    <strong>Balance:</strong> $${user.balance}<br>
+                    <strong>Routing:</strong> ${user.routingNumber}<br>
+                    <strong>Account:</strong> ${user.accountNumber}
+                `;
+                userRect.appendChild(userDetails);
+
+                userRect.addEventListener("mouseenter", () => {
+                  userDetails.style.display = "block";
+                });
+                userRect.addEventListener("mouseleave", () => {
+                  userDetails.style.display = "none";
+                });
+
+                userContainer.appendChild(userRect);
+              });
+
+              // Show users and change button text
+              userContainer.style.display = "flex";
+              displayButton.textContent = "Back to Main Menu";
+            });
+        } else {
+          // Hide users and reset button text
+          userContainer.style.display = "none";
+          displayButton.textContent = "Display Users in the Bank";
+        }
+      });
+    </script>
+  </body>
+</html>
